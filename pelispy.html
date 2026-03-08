@@ -1,0 +1,1894 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta http-equiv="Cache-Control" content="public, max-age=3600">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Películas - CineTec</title>
+    <!-- Cache para navegador -->
+    <meta http-equiv="Cache-Control" content="public, max-age=3600">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
+        
+        /* HEADER */
+        .header {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            padding: 20px;
+            border-bottom: 2px solid #334155;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .profile-pic {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 3px solid #3b82f6;
+            object-fit: cover;
+            background-color: #475569;
+        }
+        
+        .user-details h2 {
+            color: #3b82f6;
+            margin-bottom: 5px;
+        }
+        
+        .user-status {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+        
+        .upload-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+        
+        .upload-btn:hover {
+            background: #2563eb;
+        }
+        
+        .status-input {
+            background: #1e293b;
+            border: 2px solid #334155;
+            border-radius: 8px;
+            padding: 10px 15px;
+            color: white;
+            width: 300px;
+            font-size: 14px;
+        }
+        
+        .logout-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background: #dc2626;
+        }
+        
+        /* PELÍCULAS */
+        .movies-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        
+        .section-title {
+            font-size: 28px;
+            color: #3b82f6;
+            margin-bottom: 30px;
+            border-left: 4px solid #3b82f6;
+            padding-left: 15px;
+        }
+        
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+        
+        .movie-card {
+            background: #1e293b;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid #334155;
+        }
+        
+        .movie-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+        
+        .movie-poster {
+            width: 100%;
+            height: 350px;
+            object-fit: cover;
+            border-bottom: 2px solid #334155;
+            /* Optimización: carga perezosa */
+            loading: lazy;
+        }
+        
+        .movie-info {
+            padding: 20px;
+        }
+        
+        .movie-title {
+            font-size: 20px;
+            color: #f8fafc;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .movie-description {
+            color: #94a3b8;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 15px;
+            height: 60px;
+            overflow: hidden;
+        }
+        
+        .movie-platform {
+            display: inline-block;
+            background: #334155;
+            color: #cbd5e1;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+        
+        .rating {
+            margin-bottom: 15px;
+        }
+        
+        .stars {
+            color: #fbbf24;
+            font-size: 22px;
+            cursor: pointer;
+        }
+        
+        .star {
+            margin-right: 2px;
+            transition: transform 0.2s;
+        }
+        
+        .star:hover {
+            transform: scale(1.2);
+        }
+        
+        .favorite-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #00008B 0%, #1a1a8b 100%); /* Azul fuerte */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s, background 0.3s;
+            border: 1px solid #FFD700; /* Borde amarillo */
+        }
+        
+        .favorite-btn:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #FFD700 0%, #ffed4e 100%); /* Amarillo al hover */
+            color: #00008B; /* Texto azul al hover */
+        }
+        
+        .favorite-btn.favorited {
+            background: linear-gradient(135deg, #FFD700 0%, #ffed4e 100%); /* Amarillo cuando es favorito */
+            color: #00008B; /* Texto azul cuando es favorito */
+        }
+        
+        /* ESTILOS PARA COMENTARIOS */
+        .comment-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #334155;
+        }
+        
+        .comment-btn {
+            background: #475569;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .comment-btn:hover {
+            background: #64748b;
+        }
+        
+        .comment-modal .modal-content {
+            max-width: 600px;
+        }
+        
+        .comments-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 15px 0;
+            padding: 10px;
+            background: #0f172a;
+            border-radius: 8px;
+        }
+        
+        .comment-item {
+            background: #1e293b;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 3px solid #3b82f6;
+        }
+        
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .comment-user {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+        
+        .comment-date {
+            color: #94a3b8;
+            font-size: 12px;
+        }
+        
+        .comment-text {
+            color: #e2e8f0;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+        
+        .comment-input {
+            width: 100%;
+            padding: 12px;
+            background: #1e293b;
+            border: 2px solid #334155;
+            border-radius: 8px;
+            color: white;
+            margin-bottom: 10px;
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .no-comments {
+            text-align: center;
+            color: #94a3b8;
+            padding: 20px;
+            font-style: italic;
+        }
+        
+        /* PUNTUACIÓN PROMEDIO */
+        .rating-average {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 5px;
+            font-size: 14px;
+            color: #fbbf24;
+        }
+        
+        .average-text {
+            color: #cbd5e1;
+            font-size: 12px;
+        }
+        
+        /* MODAL PARA SUBIR FOTO */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: #1e293b;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            border: 2px solid #3b82f6;
+        }
+        
+        .modal h3 {
+            color: #3b82f6;
+            margin-bottom: 20px;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .confirm {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .cancel {
+            background: #475569;
+            color: white;
+        }
+        
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .user-info {
+                flex-direction: column;
+            }
+            
+            .status-input {
+                width: 100%;
+            }
+            
+            .movies-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 20px;
+            }
+            
+            .movie-poster {
+                height: 300px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .movies-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .movie-card {
+                max-width: 100%;
+            }
+        }
+        
+        .success-message {
+            background: #10b981;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            text-align: center;
+            display: none;
+        }
+        /* BOTÓN FAVORITOS */
+        .favorites-btn {
+            background: linear-gradient(135deg, #FFD700 0%, #ffed4e 100%);
+            color: #00008B;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 2px solid #00008B;
+        }
+
+        .favorites-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+        }
+
+        /* MODAL FAVORITOS */
+        #favoritesModal .modal-content {
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .favorites-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        margin: 20px 0;
+        }
+
+        .favorite-movie-card {
+            background: #1e293b;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid #FFD700;
+        }
+
+        .favorite-movie-poster {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+
+        .favorite-movie-info {
+            padding: 15px;
+        }
+
+        .favorite-movie-title {
+            font-size: 16px;
+            color: white;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .favorite-movie-platform {
+            color: #94a3b8;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+        
+        .favorite-movie-rating {
+            color: #FFD700;
+            font-size: 14px;
+        }
+
+        .no-favorites {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+            font-style: italic;
+        }
+        
+        .favorites-count {
+            color: #FFD700;
+            font-size: 14px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER CON INFO DE USUARIO -->
+    <div class="header">
+        <div class="header-content">
+            <div class="user-info">
+                <div class="user-profile">
+                    <img id="profileImage" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" 
+                         alt="Foto perfil" class="profile-pic">
+                    <div class="user-details">
+                        <h2 id="usernameDisplay">{{ session.usuario if session.usuario else 'Usuario' }}</h2>
+                        <p class="user-status" id="userStatus">📝 {{ session.descripcion if session.descripcion else 'Actualiza tu estado...' }}</p>
+                    </div>
+                </div>
+                
+                <div class="status-section">
+                    <input type="text" id="newStatus" class="status-input" 
+                           placeholder="¿Qué estás viendo hoy?">
+                    <button onclick="updateStatus()" class="upload-btn">Actualizar Estado</button>
+                </div>
+                
+                <div class="upload-section">
+                    <input type="file" id="imageUpload" accept="image/*" style="display: none;" 
+                           onchange="uploadImage()">
+                    <button onclick="document.getElementById('imageUpload').click()" 
+                            class="upload-btn">📷 Cambiar Foto</button>
+                </div>
+                <div class="favorites-section">
+                    <button onclick="showFavorites()" class="favorites-btn">
+                    ⭐ Mis Favoritas
+                    </button>
+                </div>
+            </div>
+            
+            <a href="/logout">
+                <button class="logout-btn">Cerrar Sesión</button>
+            </a>
+        </div>
+    </div>
+    
+    <!-- MENSAJE DE ÉXITO -->
+    <div id="successMessage" class="success-message"></div>
+    
+    <!-- CONTENIDO PRINCIPAL - PELÍCULAS -->
+    <div class="movies-container">
+        <h1 class="section-title">🎬 Películas Recomendadas</h1>
+        
+        <div class="movies-grid">
+            <!-- PELÍCULA 1 - El Resplandor -->
+            <div class="movie-card">
+                <img src="https://m.media-amazon.com/images/M/MV5BZWFlYmY2MGEtZjVkYS00YzU4LTg0YjQtYzY1ZGE3NTA5NGQxXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_.jpg"
+                     alt="El Resplandor" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">El Resplandor</h3>
+                    <p class="movie-description">Un escritor acepta un trabajo de cuidador en un hotel aislado durante el invierno, donde su cordura se desmorona lentamente.</p>
+                    <span class="movie-platform">Amazon Prime</span>
+                    <div class="rating">
+                        <div class="stars" data-movie="El Resplandor">
+                            <span class="star" data-value="1">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                        </div>
+                    </div>
+                    <button class="favorite-btn" onclick="toggleFavorite(this, 'El Resplandor')">
+                        ❤️ Agregar a Favoritos
+                    </button>
+                    <!-- SECCIÓN DE COMENTARIOS -->
+                    <div class="comment-section">
+                        <button class="comment-btn" onclick="showCommentModal('El Resplandor')">
+                            💬 Comentar
+                        </button>
+                        <div class="rating-average">
+                            <span>★</span>
+                            <span id="avg-El Resplandor">0.0</span>
+                            <span class="average-text">(0 votos)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PELÍCULA 2 - El Padrino -->
+            <div class="movie-card">
+                <img src="https://m.media-amazon.com/images/M/MV5BM2MyNjYxNmUtYTAwNi00MTYxLWJmNWYtYzZlODY3ZTk3OTFlXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg" 
+                     alt="El Padrino" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">El Padrino</h3>
+                    <p class="movie-description">La saga de la familia Corleone, una poderosa dinastía de la mafia italiana en Nueva York.</p>
+                    <span class="movie-platform">Netflix</span>
+                    <div class="rating">
+                        <div class="stars" data-movie="El Padrino">
+                            <span class="star" data-value="1">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                        </div>
+                    </div>
+                    <button class="favorite-btn" onclick="toggleFavorite(this, 'El Padrino')">
+                        ❤️ Agregar a Favoritos
+                    </button>
+                    <!-- SECCIÓN DE COMENTARIOS -->
+                    <div class="comment-section">
+                        <button class="comment-btn" onclick="showCommentModal('El Padrino')">
+                            💬 Comentar
+                        </button>
+                        <div class="rating-average">
+                            <span>★</span>
+                            <span id="avg-El Padrino">0.0</span>
+                            <span class="average-text">(0 votos)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PELÍCULA 3 - El Caballero Oscuro -->
+            <div class="movie-card">
+                <img src="https://m.media-amazon.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_.jpg" 
+                     alt="El Caballero Oscuro" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">El Caballero Oscuro</h3>
+                    <p class="movie-description">Batman se enfrenta al Joker, un criminal psicótico que quiere sumir a Gotham en la anarquía.</p>
+                    <span class="movie-platform">HBO Max</span>
+                    <div class="rating">
+                        <div class="stars" data-movie="El Caballero Oscuro">
+                            <span class="star" data-value="1">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                        </div>
+                    </div>
+                    <button class="favorite-btn" onclick="toggleFavorite(this, 'El Caballero Oscuro')">
+                        ❤️ Agregar a Favoritos
+                    </button>
+                    <!-- SECCIÓN DE COMENTARIOS -->
+                    <div class="comment-section">
+                        <button class="comment-btn" onclick="showCommentModal('El Caballero Oscuro')">
+                            💬 Comentar
+                        </button>
+                        <div class="rating-average">
+                            <span>★</span>
+                            <span id="avg-El Caballero Oscuro">0.0</span>
+                            <span class="average-text">(0 votos)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PELÍCULA 4 - La Lista de Schindler -->
+            <div class="movie-card">
+                <img src="https://m.media-amazon.com/images/M/MV5BNDE4OTMxMTctNmRhYy00NWE2LTg3YzItYTk3M2UwOTU5Njg4XkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_.jpg" 
+                     alt="La Lista de Schindler" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">La Lista de Schindler</h3>
+                    <p class="movie-description">Un empresario alemán salva a más de mil refugiados judíos durante el Holocausto.</p>
+                    <span class="movie-platform">Disney+</span>
+                    <div class="rating">
+                        <div class="stars" data-movie="La Lista de Schindler">
+                            <span class="star" data-value="1">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                        </div>
+                    </div>
+                    <button class="favorite-btn" onclick="toggleFavorite(this, 'La Lista de Schindler')">
+                        ❤️ Agregar a Favoritos
+                    </button>
+                    <!-- SECCIÓN DE COMENTARIOS -->
+                    <div class="comment-section">
+                        <button class="comment-btn" onclick="showCommentModal('La Lista de Schindler')">
+                            💬 Comentar
+                        </button>
+                        <div class="rating-average">
+                            <span>★</span>
+                            <span id="avg-La Lista de Schindler">0.0</span>
+                            <span class="average-text">(0 votos)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PELÍCULA 5 - Matrix -->
+            <div class="movie-card">
+                <img src="https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_.jpg" 
+                     alt="Matrix" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">Matrix</h3>
+                    <p class="movie-description">Un hacker descubre que su realidad es una simulación creada por máquinas inteligentes.</p>
+                    <span class="movie-platform">HBO Max</span>
+                    <div class="rating">
+                        <div class="stars" data-movie="Matrix">
+                            <span class="star" data-value="1">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                        </div>
+                    </div>
+                    <button class="favorite-btn" onclick="toggleFavorite(this, 'Matrix')">
+                        ❤️ Agregar a Favoritos
+                    </button>
+                    <!-- SECCIÓN DE COMENTARIOS -->
+                    <div class="comment-section">
+                        <button class="comment-btn" onclick="showCommentModal('Matrix')">
+                            💬 Comentar
+                        </button>
+                        <div class="rating-average">
+                            <span>★</span>
+                            <span id="avg-Matrix">0.0</span>
+                            <span class="average-text">(0 votos)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PELÍCULA 6 - Origen -->
+            <div class="movie-card">
+                <img src="https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_.jpg" 
+                    alt="Origen" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">Origen</h3>
+                    <p class="movie-description">Un ladrón que roba secretos corporativos mediante el uso de tecnología para compartir sueños.</p>
+                    <span class="movie-platform">Netflix</span>
+                    <div class="rating">
+                        <div class="stars" data-movie="Origen">
+                            <span class="star" data-value="1">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                        </div>
+                    </div>
+                    <button class="favorite-btn" onclick="toggleFavorite(this, 'Origen')">
+                        ❤️ Agregar a Favoritos
+                    </button>
+                    <!-- SECCIÓN DE COMENTARIOS -->
+                    <div class="comment-section">
+                        <button class="comment-btn" onclick="showCommentModal('Origen')">
+                            💬 Comentar
+                        </button>
+                        <div class="rating-average">
+                            <span>★</span>
+                            <span id="avg-Origen">0.0</span>
+                            <span class="average-text">(0 votos)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PELÍCULA 7 - Pulp Fiction -->
+            <div class="movie-card">
+                <img src="https://m.media-amazon.com/images/M/MV5BNGNhMDIzZTUtNTBlZi00MTRlLWFjM2ItYzViMjE3YzI5MjljXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg" 
+                     alt="Pulp Fiction" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">Pulp Fiction</h3>
+                    <p class="movie-description">Las vidas de dos matones, un boxeador y una pareja de atracadores se entrelazan.</p>
+                    <span class="movie-platform">Amazon Prime</span>
+                    <div class="rating">
+                        <div class="stars" data-movie="Pulp Fiction">
+                            <span class="star" data-value="1">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                        </div>
+                    </div>
+                    <button class="favorite-btn" onclick="toggleFavorite(this, 'Pulp Fiction')">
+                        ❤️ Agregar a Favoritos
+                    </button>
+                    <!-- SECCIÓN DE COMENTARIOS -->
+                    <div class="comment-section">
+                        <button class="comment-btn" onclick="showCommentModal('Pulp Fiction')">
+                            💬 Comentar
+                        </button>
+                        <div class="rating-average">
+                            <span>★</span>
+                            <span id="avg-Pulp Fiction">0.0</span>
+                            <span class="average-text">(0 votos)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PELÍCULA 8 - El Señor de los Anillos -->
+            <div class="movie-card">
+                <img src="https://m.media-amazon.com/images/M/MV5BN2EyZjM3NzUtNWUzMi00MTgxLWI0NTctMzY4M2VlOTdjZWRiXkEyXkFqcGdeQXVyNDUzOTQ5MjY@._V1_.jpg" 
+                     alt="El Señor de los Anillos" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">El Señor de los Anillos</h3>
+                    <p class="movie-description">Un hobbit debe destruir un anillo poderoso en el Monte del Destino para salvar la Tierra Media.</p>
+                    <span class="movie-platform">HBO Max</span>
+                    <div class="rating">
+                        <div class="stars" data-movie="El Señor de los Anillos">
+                            <span class="star" data-value="1">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                        </div>
+                    </div>
+                    <button class="favorite-btn" onclick="toggleFavorite(this, 'El Señor de los Anillos')">
+                        ❤️ Agregar a Favoritos
+                    </button>
+                    <!-- SECCIÓN DE COMENTARIOS -->
+                    <div class="comment-section">
+                        <button class="comment-btn" onclick="showCommentModal('El Señor de los Anillos')">
+                            💬 Comentar
+                        </button>
+                        <div class="rating-average">
+                            <span>★</span>
+                            <span id="avg-El Señor de los Anillos">0.0</span>
+                            <span class="average-text">(0 votos)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PELÍCULA 9 - Forrest Gump -->
+            <div class="movie-card">
+                <img src="https://m.media-amazon.com/images/M/MV5BNWIwODRlZTUtY2U3ZS00Yzg1LWJhNzYtMmZiYmEyNmU1NjMzXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_.jpg" 
+                    alt="Forrest Gump" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">Forrest Gump</h3>
+                    <p class="movie-description">La vida de un hombre con discapacidad intelectual que vive eventos históricos cruciales.</p>
+                    <span class="movie-platform">Netflix</span>
+                    <div class="rating">
+                        <div class="stars" data-movie="Forrest Gump">
+                            <span class="star" data-value="1">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                        </div>
+                    </div>
+                    <button class="favorite-btn" onclick="toggleFavorite(this, 'Forrest Gump')">
+                        ❤️ Agregar a Favoritos
+                    </button>
+                    <!-- SECCIÓN DE COMENTARIOS -->
+                    <div class="comment-section">
+                        <button class="comment-btn" onclick="showCommentModal('Forrest Gump')">
+                            💬 Comentar
+                        </button>
+                        <div class="rating-average">
+                            <span>★</span>
+                            <span id="avg-Forrest Gump">0.0</span>
+                            <span class="average-text">(0 votos)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PELÍCULA 10 - Interestelar -->
+            <div class="movie-card">
+                <img src="https://m.media-amazon.com/images/M/MV5BZjdkOTU3MDktN2IxOS00OGEyLWFmMjktY2FiMmZkNWIyODZiXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg" 
+                     alt="Interestelar" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">Interestelar</h3>
+                    <p class="movie-description">Un grupo de exploradores viaja a través de un agujero de gusano en el espacio para asegurar la supervivencia humana.</p>
+                    <span class="movie-platform">Amazon Prime</span>
+                    <div class="rating">
+                        <div class="stars" data-movie="Interestelar">
+                            <span class="star" data-value="1">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                        </div>
+                    </div>
+                    <button class="favorite-btn" onclick="toggleFavorite(this, 'Interestelar')">
+                        ❤️ Agregar a Favoritos
+                    </button>
+                    <!-- SECCIÓN DE COMENTARIOS -->
+                    <div class="comment-section">
+                        <button class="comment-btn" onclick="showCommentModal('Interestelar')">
+                            💬 Comentar
+                        </button>
+                        <div class="rating-average">
+                            <span>★</span>
+                            <span id="avg-Interestelar">0.0</span>
+                            <span class="average-text">(0 votos)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PELÍCULA 11 - El Rey León -->
+            <div class="movie-card">
+                <img src="https://m.media-amazon.com/images/M/MV5BYTYxNGMyZTYtMjE3MS00MzNjLWFjNmYtMDk3N2FmM2JiM2M1XkEyXkFqcGdeQXVyNjY5NDU4NzI@._V1_.jpg" 
+                    alt="El Rey León" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">El Rey León</h3>
+                    <p class="movie-description">Simba, un león joven, debe reclamar su lugar como rey después de la muerte de su padre.</p>
+                    <span class="movie-platform">Disney+</span>
+                    <div class="rating">
+                        <div class="stars" data-movie="El Rey León">
+                            <span class="star" data-value="1">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                        </div>
+                    </div>
+                    <button class="favorite-btn" onclick="toggleFavorite(this, 'El Rey León')">
+                        ❤️ Agregar a Favoritos
+                    </button>
+                    <!-- SECCIÓN DE COMENTARIOS -->
+                    <div class="comment-section">
+                        <button class="comment-btn" onclick="showCommentModal('El Rey León')">
+                            💬 Comentar
+                        </button>
+                        <div class="rating-average">
+                            <span>★</span>
+                            <span id="avg-El Rey León">0.0</span>
+                            <span class="average-text">(0 votos)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PELÍCULA 12 - Gladiador -->
+            <div class="movie-card">
+                <img src="https://m.media-amazon.com/images/M/MV5BMDliMmNhNDEtODUyOS00MjNlLTgxODEtN2U3NzIxMGVkZTA1L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_.jpg" 
+                     alt="Gladiador" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">Gladiador</h3>
+                    <p class="movie-description">Un general romano traicionado se convierte en gladiador para vengar la muerte de su familia.</p>
+                    <span class="movie-platform">Netflix</span>
+                    <div class="rating">
+                        <div class="stars" data-movie="Gladiador">
+                            <span class="star" data-value="1">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                        </div>
+                    </div>
+                    <button class="favorite-btn" onclick="toggleFavorite(this, 'Gladiador')">
+                        ❤️ Agregar a Favoritos
+                    </button>
+                    <!-- SECCIÓN DE COMENTARIOS -->
+                    <div class="comment-section">
+                        <button class="comment-btn" onclick="showCommentModal('Gladiador')">
+                            💬 Comentar
+                        </button>
+                        <div class="rating-average">
+                            <span>★</span>
+                            <span id="avg-Gladiador">0.0</span>
+                            <span class="average-text">(0 votos)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PELÍCULA 13 - Reservoir Dogs -->
+            <div class="movie-card">
+                <img src="https://m.media-amazon.com/images/M/MV5BZmExNmEwYWItYmQzOS00YjA5LTk2MjktZjEyZDE1Y2QxNjA1XkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_.jpg" 
+                    alt="Reservoir Dogs" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">Reservoir Dogs</h3>
+                    <p class="movie-description">Después de un robo fallido, los criminales sospechan que hay un informante entre ellos.</p>
+                    <span class="movie-platform">Amazon Prime</span>
+                    <div class="rating">
+                        <div class="stars" data-movie="Reservoir Dogs">
+                            <span class="star" data-value="1">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                        </div>
+                    </div>
+                    <button class="favorite-btn" onclick="toggleFavorite(this, 'Reservoir Dogs')">
+                        ❤️ Agregar a Favoritos
+                    </button>
+                    <!-- SECCIÓN DE COMENTARIOS -->
+                    <div class="comment-section">
+                        <button class="comment-btn" onclick="showCommentModal('Reservoir Dogs')">
+                            💬 Comentar
+                        </button>
+                        <div class="rating-average">
+                            <span>★</span>
+                            <span id="avg-Reservoir Dogs">0.0</span>
+                            <span class="average-text">(0 votos)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PELÍCULA 14 - Titanic -->
+            <div class="movie-card">
+                <img src="https://m.media-amazon.com/images/M/MV5BMDdmZGU3NDQtY2E5My00ZTliLWIzOTUtMTY4ZGI1YjdiNjk3XkEyXkFqcGdeQXVyNTA4NzY1MzY@._V1_.jpg" 
+                     alt="Titanic" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">Titanic</h3>
+                    <p class="movie-description">Una joven de alta sociedad y un artista pobre se enamoran a bordo del lujoso trasatlántico.</p>
+                    <span class="movie-platform">Netflix</span>
+                    <div class="rating">
+                        <div class="stars" data-movie="Titanic">
+                            <span class="star" data-value="1">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                        </div>
+                    </div>
+                    <button class="favorite-btn" onclick="toggleFavorite(this, 'Titanic')">
+                        ❤️ Agregar a Favoritos
+                    </button>
+                    <!-- SECCIÓN DE COMENTARIOS -->
+                    <div class="comment-section">
+                        <button class="comment-btn" onclick="showCommentModal('Titanic')">
+                            💬 Comentar
+                        </button>
+                        <div class="rating-average">
+                            <span>★</span>
+                            <span id="avg-Titanic">0.0</span>
+                            <span class="average-text">(0 votos)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PELÍCULA 15 - Jurassic Park -->
+            <div class="movie-card">
+                <img src="https://m.media-amazon.com/images/M/MV5BMjM2MDgxMDg0Nl5BMl5BanBnXkFtZTgwNTM2OTM5NDE@._V1_.jpg" 
+                     alt="Jurassic Park" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">Jurassic Park</h3>
+                    <p class="movie-description">Un parque temático con dinosaurios clonados se convierte en una pesadilla cuando los animales escapan.</p>
+                    <span class="movie-platform">Amazon Prime</span>
+                    <div class="rating">
+                        <div class="stars" data-movie="Jurassic Park">
+                            <span class="star" data-value="1">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                        </div>
+                    </div>
+                    <button class="favorite-btn" onclick="toggleFavorite(this, 'Jurassic Park')">
+                        ❤️ Agregar a Favoritos
+                    </button>
+                    <!-- SECCIÓN DE COMENTARIOS -->
+                    <div class="comment-section">
+                        <button class="comment-btn" onclick="showCommentModal('Jurassic Park')">
+                            💬 Comentar
+                        </button>
+                        <div class="rating-average">
+                            <span>★</span>
+                            <span id="avg-Jurassic Park">0.0</span>
+                            <span class="average-text">(0 votos)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PELÍCULA 16 - El Silencio de los Inocentes -->
+            <div class="movie-card">
+                <img src="https://m.media-amazon.com/images/M/MV5BNjNhZTk0ZmEtNjJhMi00YzFlLWE1MmEtYzM1M2ZmMGMwMTU4XkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_.jpg" 
+                     alt="El Silencio de los Inocentes" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">El Silencio de los Inocentes</h3>
+                    <p class="movie-description">Una joven agente del FBI busca la ayuda de un brillante asesino en serie para atrapar a otro.</p>
+                    <span class="movie-platform">HBO Max</span>
+                    <div class="rating">
+                        <div class="stars" data-movie="El Silencio de los Inocentes">
+                            <span class="star" data-value="1">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                        </div>
+                    </div>
+                    <button class="favorite-btn" onclick="toggleFavorite(this, 'El Silencio de los Inocentes')">
+                        ❤️ Agregar a Favoritos
+                    </button>
+                    <!-- SECCIÓN DE COMENTARIOS -->
+                    <div class="comment-section">
+                        <button class="comment-btn" onclick="showCommentModal('El Silencio de los Inocentes')">
+                            💬 Comentar
+                        </button>
+                        <div class="rating-average">
+                            <span>★</span>
+                            <span id="avg-El Silencio de los Inocentes">0.0</span>
+                            <span class="average-text">(0 votos)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PELÍCULA 17 - Star Wars -->
+            <div class="movie-card">
+                <img src="https://image.tmdb.org/t/p/w300/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg" 
+                     alt="Star Wars" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">Star Wars: Una Nueva Esperanza</h3>
+                    <p class="movie-description">Luke Skywalker se une a la rebelión para rescatar a la princesa Leia y derrotar al Imperio Galáctico.</p>
+                    <span class="movie-platform">Disney+</span>
+                    <div class="rating">
+                        <div class="stars" data-movie="Star Wars">
+                            <span class="star" data-value="1">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                        </div>
+                    </div>
+                    <button class="favorite-btn" onclick="toggleFavorite(this, 'Star Wars')">
+                        ❤️ Agregar a Favoritos
+                    </button>
+                    <!-- SECCIÓN DE COMENTARIOS -->
+                    <div class="comment-section">
+                        <button class="comment-btn" onclick="showCommentModal('Star Wars')">
+                            💬 Comentar
+                        </button>
+                        <div class="rating-average">
+                            <span>★</span>
+                            <span id="avg-Star Wars">0.0</span>
+                            <span class="average-text">(0 votos)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PELÍCULA 18 - Terminator 2 -->
+            <div class="movie-card">
+                <img src="https://m.media-amazon.com/images/M/MV5BMGU2NzRmZjUtOGUxYS00ZjdjLWEwZWItY2NlM2JhNjkxNTFmXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_.jpg" 
+                     alt="Terminator 2" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">Terminator 2: El Juicio Final</h3>
+                    <p class="movie-description">Un cyborg es enviado del futuro para proteger al joven John Connor de un Terminator más avanzado.</p>
+                    <span class="movie-platform">Netflix</span>
+                    <div class="rating">
+                        <div class="stars" data-movie="Terminator 2">
+                            <span class="star" data-value="1">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                        </div>
+                    </div>
+                    <button class="favorite-btn" onclick="toggleFavorite(this, 'Terminator 2')">
+                        ❤️ Agregar a Favoritos
+                    </button>
+                    <!-- SECCIÓN DE COMENTARIOS -->
+                    <div class="comment-section">
+                        <button class="comment-btn" onclick="showCommentModal('Terminator 2')">
+                            💬 Comentar
+                        </button>
+                        <div class="rating-average">
+                            <span>★</span>
+                            <span id="avg-Terminator 2">0.0</span>
+                            <span class="average-text">(0 votos)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PELÍCULA 19 - Avatar -->
+            <div class="movie-card">
+                <img src="https://m.media-amazon.com/images/M/MV5BMTYwOTEwNjAzMl5BMl5BanBnXkFtZTcwODc5MTUwMw@@._V1_.jpg" 
+                     alt="Avatar" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">Avatar</h3>
+                    <p class="movie-description">Un marine parapléjico es enviado a la luna Pandora en una misión única, pero se enfrenta a un dilema moral.</p>
+                    <span class="movie-platform">Disney+</span>
+                    <div class="rating">
+                        <div class="stars" data-movie="Avatar">
+                            <span class="star" data-value="1">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                        </div>
+                    </div>
+                    <button class="favorite-btn" onclick="toggleFavorite(this, 'Avatar')">
+                        ❤️ Agregar a Favoritos
+                    </button>
+                    <!-- SECCIÓN DE COMENTARIOS -->
+                    <div class="comment-section">
+                        <button class="comment-btn" onclick="showCommentModal('Avatar')">
+                            💬 Comentar
+                        </button>
+                        <div class="rating-average">
+                            <span>★</span>
+                            <span id="avg-Avatar">0.0</span>
+                            <span class="average-text">(0 votos)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PELÍCULA 20 - El Gran Hotel Budapest -->
+            <div class="movie-card">
+                <img src="https://m.media-amazon.com/images/M/MV5BMzM5NjUxOTEyMl5BMl5BanBnXkFtZTgwNjEyMDM0MDE@._V1_.jpg" 
+                    alt="El Gran Hotel Budapest" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">El Gran Hotel Budapest</h3>
+                    <p class="movie-description">Las aventuras de Gustave H, un legendario conserje de hotel, y Zero Moustafa, su joven amigo.</p>
+                    <span class="movie-platform">Amazon Prime</span>
+                    <div class="rating">
+                        <div class="stars" data-movie="El Gran Hotel Budapest">
+                            <span class="star" data-value="1">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                        </div>
+                    </div>
+                    <button class="favorite-btn" onclick="toggleFavorite(this, 'El Gran Hotel Budapest')">
+                        ❤️ Agregar a Favoritos
+                    </button>
+                    <!-- SECCIÓN DE COMENTARIOS -->
+                    <div class="comment-section">
+                        <button class="comment-btn" onclick="showCommentModal('El Gran Hotel Budapest')">
+                            💬 Comentar
+                        </button>
+                        <div class="rating-average">
+                            <span>★</span>
+                            <span id="avg-El Gran Hotel Budapest">0.0</span>
+                            <span class="average-text">(0 votos)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- MODAL PARA CONFIRMAR CAMBIOS -->
+    <div id="imageModal" class="modal">
+        <div class="modal-content">
+            <h3>📸 Subir Foto de Perfil</h3>
+            <p>¿Estás seguro de que quieres cambiar tu foto de perfil?</p>
+            <div class="modal-buttons">
+                <button class="modal-btn confirm" onclick="confirmImageUpload()">Sí, cambiar</button>
+                <button class="modal-btn cancel" onclick="closeModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PARA COMENTARIOS -->
+    <div id="commentModal" class="modal">
+        <div class="modal-content">
+            <h3>💬 Comentarios - <span id="commentMovieTitle"></span></h3>
+            
+            <div class="comments-list" id="commentsList">
+                <!-- Los comentarios se cargarán aquí -->
+            </div>
+            
+            <div class="comment-input-section">
+                <textarea 
+                    id="newComment" 
+                    class="comment-input" 
+                    placeholder="Escribe tu comentario aquí... (máx 500 caracteres)"
+                    maxlength="500"
+                ></textarea>
+                <div class="modal-buttons">
+                    <button class="modal-btn confirm" onclick="submitComment()">
+                        Publicar Comentario
+                    </button>
+                    <button class="modal-btn cancel" onclick="closeCommentModal()">
+                        Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // CARGAR DATOS DEL USUARIO AL INICIAR
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cargar estado desde la sesión
+            const userStatusElement = document.getElementById('userStatus');
+            if (userStatusElement) {
+                userStatusElement.textContent = '📝 ' + (sessionStorage.getItem('userStatus') || 'Hola, soy nuevo en CineTec');
+            }
+            
+            // Cargar foto de perfil
+            const profileImage = document.getElementById('profileImage');
+            if (profileImage) {
+                const savedPhoto = sessionStorage.getItem('profilePhoto');
+                if (savedPhoto) {
+                    profileImage.src = savedPhoto;
+                }
+            }
+            
+            // Configurar fallback para imágenes CON LA VERSIÓN MEJORADA
+            setTimeout(() => {
+                setupImageFallbacks();
+            }, 100);
+            
+            // Cargar preferencias del usuario DESDE MONGODB
+            loadUserPreferences();
+            
+            // Cargar todos los votos
+            loadAllRatings();
+            
+            // Inicializar estrellas con eventos
+            document.querySelectorAll('.stars').forEach(starsContainer => {
+                const movie = starsContainer.dataset.movie;
+                
+                // Configurar eventos para estrellas
+                starsContainer.querySelectorAll('.star').forEach(star => {
+                    star.addEventListener('click', function() {
+                        const value = parseInt(this.dataset.value);
+                        rateMovie(movie, value);
+                    });
+                    
+                    star.addEventListener('mouseover', function() {
+                        const value = parseInt(this.dataset.value);
+                        highlightStars(starsContainer, value, true);
+                    });
+                    
+                    star.addEventListener('mouseout', function() {
+                        const currentRating = starsContainer.dataset.currentRating || 0;
+                        highlightStars(starsContainer, currentRating);
+                    });
+                });
+            });
+            
+            // Hacer estrellas responsivas al hover
+            document.querySelectorAll('.star').forEach(star => {
+                star.addEventListener('mouseover', function() {
+                    this.style.transform = 'scale(1.3)';
+                });
+                
+                star.addEventListener('mouseout', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+        });
+
+        // FUNCIÓN MEJORADA PARA MANEJAR IMÁGENES QUE NO CARGAN
+        function setupImageFallbacks() {
+            console.log("🔧 Configurando fallbacks para imágenes...");
+            
+            document.querySelectorAll('.movie-poster').forEach(img => {
+                // Configurar timeout para imágenes que tardan demasiado
+                let timeoutId = setTimeout(() => {
+                    if (!img.complete || img.naturalWidth === 0) {
+                        console.log(`⏰ Timeout para imagen: ${img.alt}`);
+                        // Usar SVG como placeholder (no necesita internet)
+                        const svgPlaceholder = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="450" viewBox="0 0 300 450">
+                            <rect width="300" height="450" fill="%231a1a2e"/>
+                            <text x="150" y="200" text-anchor="middle" fill="%23e50914" font-family="Arial, sans-serif" font-size="18">
+                                Imagen no disponible
+                            </text>
+                            <text x="150" y="230" text-anchor="middle" fill="%2394a3b8" font-family="Arial, sans-serif" font-size="14">
+                                ${encodeURIComponent(img.alt)}
+                            </text>
+                            <rect x="50" y="260" width="200" height="2" fill="%23e50914"/>
+                        </svg>`;
+                        img.src = svgPlaceholder;
+                        img.alt = 'Imagen no disponible';
+                    }
+                }, 3000); // 3 segundos máximo
+                
+                img.addEventListener('load', function() {
+                    clearTimeout(timeoutId);
+                    console.log(`✅ Imagen cargada: ${this.alt}`);
+                });
+                
+                img.addEventListener('error', function() {
+                    clearTimeout(timeoutId);
+                    console.log(`❌ Error cargando imagen: ${this.alt}`);
+                    
+                    // Usar SVG como placeholder (no necesita internet)
+                    const svgPlaceholder = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="450" viewBox="0 0 300 450">
+                        <rect width="300" height="450" fill="%231a1a2e"/>
+                        <text x="150" y="200" text-anchor="middle" fill="%23e50914" font-family="Arial, sans-serif" font-size="18">
+                            Imagen no disponible
+                        </text>
+                        <text x="150" y="230" text-anchor="middle" fill="%2394a3b8" font-family="Arial, sans-serif" font-size="14">
+                            ${encodeURIComponent(this.alt)}
+                        </text>
+                        <rect x="50" y="260" width="200" height="2" fill="%23e50914"/>
+                    </svg>`;
+                    
+                    this.src = svgPlaceholder;
+                    this.alt = 'Imagen no disponible';
+                });
+            });
+        }
+
+        // FUNCIÓN PARA CARGAR TODOS LOS VOTOS
+        async function loadAllRatings() {
+            try {
+                const response = await fetch('/get_all_ratings');
+                const data = await response.json();
+                
+                if (data.success && data.ratings) {
+                    Object.keys(data.ratings).forEach(movie => {
+                        const ratingData = data.ratings[movie];
+                        const avgElement = document.getElementById(`avg-${movie}`);
+                        
+                        if (avgElement) {
+                            // Actualizar promedio
+                            avgElement.textContent = ratingData.promedio.toFixed(1);
+                            
+                            // Actualizar texto de votos
+                            const avgText = avgElement.nextElementSibling;
+                            if (avgText && avgText.classList.contains('average-text')) {
+                                avgText.textContent = `(${ratingData.total_votos} votos)`;
+                            }
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Error cargando votos:', error);
+            }
+        }
+
+        // FUNCIÓN PARA CARGAR PREFERENCIAS DEL USUARIO DESDE MONGODB
+        async function loadUserPreferences() {
+            try {
+                const response = await fetch('/get_user_preferences');
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Guardar en sessionStorage para recargas rápidas
+                    if (data.descripcion) {
+                        sessionStorage.setItem('userStatus', data.descripcion);
+                        document.getElementById('userStatus').textContent = '📝 ' + data.descripcion;
+                    }
+                    
+                    if (data.foto_perfil) {
+                        sessionStorage.setItem('profilePhoto', data.foto_perfil);
+                        document.getElementById('profileImage').src = data.foto_perfil;
+                    }
+                    
+                    // Marcar películas favoritas DESDE MONGODB
+                    if (data.favoritos) {
+                        data.favoritos.forEach(movie => {
+                            // Buscar TODOS los botones que podrían referirse a esta película
+                            const buttons = document.querySelectorAll(`[onclick*="${movie}"]`);
+                            buttons.forEach(button => {
+                                if (button.classList.contains('favorite-btn')) {
+                                    button.classList.add('favorited');
+                                    button.innerHTML = '❤️ Eliminar de Favoritos';
+                                }
+                            });
+                        });
+                    }
+                    
+                    // Mostrar calificaciones del usuario
+                    if (data.calificaciones) {
+                        Object.keys(data.calificaciones).forEach(movie => {
+                            const rating = data.calificaciones[movie];
+                            const starsContainer = document.querySelector(`[data-movie="${movie}"]`);
+                            if (starsContainer) {
+                                highlightStars(starsContainer, rating);
+                                starsContainer.dataset.currentRating = rating;
+                            }
+                        });
+                    }
+                    
+                    // Cargar promedios de películas
+                    if (data.promedios) {
+                        Object.keys(data.promedios).forEach(movie => {
+                            const avgElement = document.getElementById(`avg-${movie}`);
+                            if (avgElement) {
+                                const promedio = data.promedios[movie];
+                                avgElement.textContent = promedio.toFixed(1);
+                                
+                                // Actualizar también el texto de votos
+                                const avgText = avgElement.nextElementSibling;
+                                if (avgText && avgText.classList.contains('average-text')) {
+                                    avgText.textContent = `(${data.total_votos[movie] || 0} votos)`;
+                                }
+                            }
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('Error cargando preferencias:', error);
+            }
+        }
+
+        // VARIABLES GLOBALES
+        let selectedFile = null;
+        let currentMovieForComment = '';
+
+        // FUNCIONES PARA PERFIL
+        async function updateStatus() {
+            const newStatus = document.getElementById('newStatus').value;
+            if (!newStatus.trim()) {
+                showMessage('⚠️ Escribe un estado primero');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/update_profile', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `descripcion=${encodeURIComponent(newStatus)}`
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('userStatus').textContent = '📝 ' + newStatus;
+                    document.getElementById('newStatus').value = '';
+                    showMessage('✅ Estado actualizado correctamente');
+                } else {
+                    showMessage('❌ Error al actualizar estado');
+                }
+            } catch (error) {
+                showMessage('❌ Error de conexión');
+            }
+        }
+
+        // FUNCIONES PARA FOTO DE PERFIL
+        function uploadImage() {
+            const fileInput = document.getElementById('imageUpload');
+            selectedFile = fileInput.files[0];
+            
+            if (selectedFile) {
+                if (!selectedFile.type.startsWith('image/')) {
+                    showMessage('❌ Solo se permiten archivos de imagen');
+                    return;
+                }
+                
+                if (selectedFile.size > 5 * 1024 * 1024) {
+                    showMessage('❌ La imagen no debe superar 5MB');
+                    return;
+                }
+                
+                // Mostrar vista previa
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profileImage').src = e.target.result;
+                    confirmImageUpload(e.target.result);
+                };
+                reader.readAsDataURL(selectedFile);
+            }
+        }
+
+        async function confirmImageUpload(imageData) {
+            try {
+                // Convertir a Blob para enviar
+                const blob = await fetch(imageData).then(r => r.blob());
+                const formData = new FormData();
+                formData.append('foto', blob, 'profile.jpg');
+                
+                const response = await fetch('/upload_photo', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('profileImage').src = data.foto_url;
+                    showMessage('✅ Foto de perfil actualizada');
+                } else {
+                    showMessage('❌ Error al subir foto');
+                }
+            } catch (error) {
+                showMessage('❌ Error de conexión');
+            }
+        }
+
+        // FUNCIONES PARA CALIFICACIÓN
+        function rateMovie(movie, rating) {
+            // Actualizar estrellas visualmente
+            const starsContainer = document.querySelector(`[data-movie="${movie}"]`);
+            highlightStars(starsContainer, rating);
+            
+            // Enviar al servidor
+            sendRatingToServer(movie, rating);
+        }
+
+        async function sendRatingToServer(movie, rating) {
+            try {
+                const response = await fetch('/rate_movie', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        pelicula: movie,
+                        calificacion: rating
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage(`⭐ Calificaste "${movie}" con ${rating} estrellas`);
+                    
+                    // Actualizar promedio si existe
+                    const avgElement = document.getElementById(`avg-${movie}`);
+                    if (avgElement && data.promedio) {
+                        avgElement.textContent = `★ ${data.promedio}`;
+                    }
+                    
+                    // Recargar todos los votos
+                    loadAllRatings();
+                }
+            } catch (error) {
+                showMessage('❌ Error al guardar calificación');
+            }
+        }
+
+        function highlightStars(container, rating, isHover = false) {
+            const stars = container.querySelectorAll('.star');
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.style.color = '#fbbf24';
+                    star.style.textShadow = isHover ? '0 0 10px #fbbf24' : 'none';
+                } else {
+                    star.style.color = '#64748b';
+                    star.style.textShadow = 'none';
+                }
+            });
+        }
+
+        // FUNCIONES PARA FAVORITOS - VERSIÓN CORREGIDA
+        async function toggleFavorite(button, movie) {
+            try {
+                const response = await fetch('/toggle_favorite', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ pelicula: movie })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Actualizar el botón inmediatamente
+                    if (data.es_favorita) {
+                        // Ahora es favorita
+                        button.classList.add('favorited');
+                        button.innerHTML = '❤️ Eliminar de Favoritos';
+                        showMessage(`✅ "${movie}" agregada a favoritos`);
+                    } else {
+                        // Ya no es favorita
+                        button.classList.remove('favorited');
+                        button.innerHTML = '❤️ Agregar a Favoritos';
+                        showMessage(`❌ "${movie}" eliminada de favoritos`);
+                    }
+                } else {
+                    showMessage(`❌ Error: ${data.error || 'No se pudo actualizar favoritos'}`);
+                }
+            } catch (error) {
+                showMessage('❌ Error de conexión al servidor');
+                console.error('Error en toggleFavorite:', error);
+            }
+        }
+
+        // FUNCIONES PARA FAVORITOS - VERSIÓN MEJORADA
+        async function showFavorites() {
+            try {
+                showMessage('⏳ Cargando tus películas favoritas...');
+                
+                const response = await fetch('/get_favorites');
+                const data = await response.json();
+                
+                if (data.success) {
+                    if (data.favoritas && data.favoritas.length > 0) {
+                        showFavoritesModal(data.favoritas);
+                        showMessage(`✅ Encontradas ${data.total} películas favoritas`);
+                    } else {
+                        showFavoritesModal([]);
+                        showMessage('ℹ️ No tienes películas favoritas todavía');
+                    }
+                } else {
+                    showMessage(`❌ Error: ${data.error || 'No se pudieron cargar los favoritos'}`);
+                }
+            } catch (error) {
+                showMessage('❌ Error de conexión al servidor');
+                console.error('Error en showFavorites:', error);
+            }
+        }
+
+        function showFavoritesModal(favoritas) {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.id = 'favoritesModal';
+            modal.style.display = 'flex';
+            
+            let content = `
+                <div class="modal-content">
+                    <h3>⭐ Mis Películas Favoritas</h3>
+            `;
+            
+            if (favoritas && favoritas.length > 0) {
+                content += `<p class="favorites-count">Total: ${favoritas.length} película(s)</p>`;
+                content += '<div class="favorites-grid">';
+                
+                favoritas.forEach(pelicula => {
+                    const imagen = pelicula.portada || 'https://via.placeholder.com/300x450?text=Imagen+no+disponible';
+                    const promedio = pelicula.calificacion_promedio ? pelicula.calificacion_promedio.toFixed(1) : '0.0';
+                    
+                    content += `
+                        <div class="favorite-movie-card">
+                            <img src="${imagen}" 
+                                 alt="${pelicula.titulo}" 
+                                 class="favorite-movie-poster"
+                                 onerror="this.src='https://via.placeholder.com/300x450?text=Imagen+no+disponible'">
+                            <div class="favorite-movie-info">
+                                <div class="favorite-movie-title">${pelicula.titulo}</div>
+                                <div class="favorite-movie-platform">${pelicula.plataforma || 'Disponible en varias plataformas'}</div>
+                                <div class="favorite-movie-rating">
+                                    ★ ${promedio} / 5
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                content += '</div>';
+            } else {
+                content += `
+                    <div class="no-favorites">
+                        <p style="font-size: 24px; margin-bottom: 20px;">📽️</p>
+                        <p>No tienes películas favoritas todavía.</p>
+                        <p>¡Agrega algunas haciendo clic en ❤️ en cualquier película!</p>
+                    </div>
+                `;
+            }
+            
+            content += `
+                    <div class="modal-buttons">
+                        <button class="modal-btn cancel" onclick="closeFavoritesModal()">
+                            Cerrar
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            modal.innerHTML = content;
+            document.body.appendChild(modal);
+        }
+
+        function closeFavoritesModal() {
+            const modal = document.getElementById('favoritesModal');
+            if (modal) {
+                modal.style.display = 'none';
+                setTimeout(() => modal.remove(), 300);
+            }
+        }
+
+        // FUNCIONES PARA COMENTARIOS
+        function showCommentModal(movie) {
+            currentMovieForComment = movie;
+            document.getElementById('commentMovieTitle').textContent = movie;
+            document.getElementById('commentModal').style.display = 'flex';
+            document.getElementById('newComment').value = '';
+            
+            // Cargar comentarios existentes
+            loadComments(movie);
+        }
+
+        function closeCommentModal() {
+            document.getElementById('commentModal').style.display = 'none';
+            currentMovieForComment = '';
+        }
+
+        async function loadComments(movie) {
+            try {
+                const response = await fetch(`/get_comments/${encodeURIComponent(movie)}`);
+                const data = await response.json();
+                
+                const commentsContainer = document.getElementById('commentsList');
+                commentsContainer.innerHTML = '';
+                
+                if (data.success && data.comentarios.length > 0) {
+                    data.comentarios.forEach(comment => {
+                        const commentElement = document.createElement('div');
+                        commentElement.className = 'comment-item';
+                        commentElement.innerHTML = `
+                            <div class="comment-header">
+                                <strong>${comment.nombre_usuario}</strong>
+                                <span class="comment-date">${comment.fecha}</span>
+                            </div>
+                            <div class="comment-text">${comment.comentario}</div>
+                        `;
+                        commentsContainer.appendChild(commentElement);
+                    });
+                } else {
+                    commentsContainer.innerHTML = '<p class="no-comments">No hay comentarios todavía. ¡Sé el primero!</p>';
+                }
+            } catch (error) {
+                console.error('Error cargando comentarios:', error);
+            }
+        }
+
+        async function submitComment() {
+            const commentText = document.getElementById('newComment').value.trim();
+            
+            if (!commentText) {
+                showMessage('⚠️ Escribe un comentario primero');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/add_comment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        pelicula: currentMovieForComment,
+                        comentario: commentText
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage('✅ Comentario agregado');
+                    document.getElementById('newComment').value = '';
+                    
+                    // Agregar el nuevo comentario a la lista
+                    const commentsContainer = document.getElementById('commentsList');
+                    const commentElement = document.createElement('div');
+                    commentElement.className = 'comment-item';
+                    commentElement.innerHTML = `
+                        <div class="comment-header">
+                            <strong>${data.comentario.nombre_usuario}</strong>
+                            <span class="comment-date">${data.comentario.fecha}</span>
+                        </div>
+                        <div class="comment-text">${data.comentario.comentario}</div>
+                    `;
+                    
+                    // Insertar al inicio
+                    if (commentsContainer.firstChild) {
+                        commentsContainer.insertBefore(commentElement, commentsContainer.firstChild);
+                    } else {
+                        commentsContainer.appendChild(commentElement);
+                    }
+                    
+                    // Remover mensaje de "no hay comentarios"
+                    const noComments = commentsContainer.querySelector('.no-comments');
+                    if (noComments) {
+                        noComments.remove();
+                    }
+                } else {
+                    showMessage('❌ Error al agregar comentario');
+                }
+            } catch (error) {
+                showMessage('❌ Error de conexión');
+            }
+        }
+
+        // FUNCIÓN PARA MOSTRAR MENSAJES
+        function showMessage(text) {
+            const messageDiv = document.getElementById('successMessage');
+            messageDiv.textContent = text;
+            messageDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        // FUNCIONES MODALES EXISTENTES
+        function closeModal() {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+
+        // Cerrar modal de favoritos al hacer clic fuera
+        document.addEventListener('click', function(event) {
+            const modal = document.getElementById('favoritesModal');
+            if (modal && event.target === modal) {
+                closeFavoritesModal();
+            }
+        });
+    </script>
+</body>
+</html>
